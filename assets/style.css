@@ -1,0 +1,78 @@
+.header {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20%;
+    background: #2A3F54;
+}
+
+.content {
+    width: 100%;
+    position: absolute;
+    top: 20%;
+    left: 0;
+    height: 80%;
+    background: white;
+}
+
+.center-loading {
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    left: 0;
+}
+
+.topnav {
+    overflow: hidden;
+    background-color: white;
+    border: 1px solid black;
+    width: 525px;
+    position: absolute;
+    top: 30%;
+    left: 25%;
+}
+
+.method-dropdown {
+    position: absolute;
+    left: 15%;
+    top: 30%;
+    font-size: 17px;
+    margin: 0px;
+    border: none;
+    width: 120px;
+}
+
+.topnav input {
+    float: left;
+    display: block;
+    color: black;
+    text-align: center;
+    text-decoration: none;
+    font-size: 17px;
+    padding: 12px;
+    margin: 0px;
+    outline: none;
+    border: 0px;
+    border-right: 1px solid black;
+    width: 400px;
+}
+
+
+.topnav button {
+    float: left;
+    text-align: center;
+    text-decoration: none;
+    font-size: 17px;
+    margin: 0px;
+    padding: 12px;
+    outline: none;
+    background: #ddd;
+    border: none;
+    cursor: pointer;
+    width: 100px;
+}
+
+.topnav button:hover {
+    background: #ccc;
+}
