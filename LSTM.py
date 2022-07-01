@@ -42,7 +42,7 @@ def getModel():
     model.add(Dense(units = 1))
 
     model.compile(optimizer='adam', loss ='mean_squared_error')
-    model.fit(x_train, y_train, epochs = 1, batch_size = 32)
+    model.fit(x_train, y_train, epochs = 5, batch_size = 32)
 
     return model;
 

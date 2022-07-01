@@ -51,6 +51,9 @@ def updateGraph(n_clicks, value):
             actual_prices = test_data['Close'].values
 
             predicted_prices = LSTM.predictTestData(model=model, test_data= test_data)
+
+            # predicted_prices2 = XGBoost.predictTestData(model=model, test_data= test_data)
+            # predicted_prices3 = RNN.predictTestData(model=model, test_data= test_data)
             
             return view.getGraph(test_data, actual_prices, predicted_prices);
         except:
