@@ -17,13 +17,12 @@ import view
 import test
 import LSTM
 import time
+import investpy
 
 app = dash.Dash()
 server = app.server
 
 #Build model
-model = LSTM.getModel();
-
 app.layout = html.Div(
     id = 'app',
     children = [
@@ -42,15 +41,30 @@ app.layout = html.Div(
 def updateGraph(n_clicks, value):
     if n_clicks > 0:
         try:
+            train_start = dt.datetime(2015, 1,1)
+            train_end = dt.datetime(2022, 1,1 )
+            data = investpy.get_stock_historical_data(stock=value,
+                                country='vietnam',
+                                from_date=train_start.strftime("%d/%m/%Y"),
+                                to_date=train_end.strftime("%d/%m/%Y"))
+
+            model = LSTM.getModel(data);
+
             #Load test data
             test_start = dt.datetime(2022,1,1)
             test_end = dt.datetime.now()
 
-            test_data = web.DataReader(value, 'yahoo', test_start, test_end)
+            # test_data = web.DataReader(value, 'yahoo', test_start, test_end)
+            test_data = investpy.get_stock_historical_data(stock=value,
+                                country='vietnam',
+                                from_date=test_start.strftime("%d/%m/%Y"),
+                                to_date=test_end.strftime("%d/%m/%Y"))
+            
+            print(test_data)
 
             actual_prices = test_data['Close'].values
 
-            predicted_prices = LSTM.predictTestData(model=model, test_data= test_data)
+            predicted_prices = LSTM.predictTestData(data = data, model=model, test_data= test_data)
 
             # predicted_prices2 = XGBoost.predictTestData(model=model, test_data= test_data)
             # predicted_prices3 = RNN.predictTestData(model=model, test_data= test_data)

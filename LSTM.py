@@ -9,14 +9,12 @@ from sklearn.preprocessing import MinMaxScaler
 
 scaler = MinMaxScaler(feature_range=(0, 1))
 prediction_days = 60;
-start = dt.datetime(2015, 1,1)
-end = dt.datetime(2022, 1,1 )
 
 #load data
-company = 'META'
-data = web.DataReader(company, 'yahoo', start, end)
+# company = 'META'
+# data = web.DataReader(company, 'yahoo', start, end)
 
-def getModel():
+def getModel(data):
     # prepare data
     scaled_data = scaler.fit_transform(data['Close'].values.reshape(-1,1))
 
@@ -46,7 +44,7 @@ def getModel():
 
     return model;
 
-def predictTestData(model, test_data):
+def predictTestData(data, model, test_data):
     total_dataset = pd.concat((data['Close'], test_data['Close']), axis=0)
 
     model_inputs = total_dataset[len(total_dataset) - len(test_data) - prediction_days: ].values
