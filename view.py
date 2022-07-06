@@ -4,7 +4,7 @@ import dash_html_components as html
 import plotly.graph_objs as go
 from plotly.subplots import make_subplots
 import plotly.express as px
-
+import pandas as pd
 
 def inputCompanyView():
     view = dcc.Input(
@@ -72,68 +72,83 @@ def create_body_view():
         );
     return view;
 
-def getGraph(test_data, actual_prices, predicted_prices):
-    # fig = dcc.Graph(
-    #     id="Predicted Data",
-    #     figure={
-    #         'data': [
-    #             {
-    #                 'x': test_data.index, 
-    #                 'y': actual_prices, 
-    #                 'type': 'line', 
-    #                 'name': 'Actual Price'
-    #             },
-    #             {
-    #                 'x': test_data.index, 
-    #                 'y': predicted_prices, 
-    #                 'type': 'line', 
-    #                 'name': 'Predicted Price'
-    #             },
-    #             # go.Candlestick(x=test_data.index,
-    #             #     open=test_data['Open'],
-    #             #     high=test_data['High'],
-    #             #     low=test_data['Low'],
-    #             #     close=test_data['Close']
-    #             #     )
-    #         ],
-    #         "layout":go.Layout(
-    #             title='scatter plot',
-    #             xaxis={'title':'Date'},
-    #             yaxis={'title':'Price'}
-    #         )
-    #     }
-    # )
-
+def getGraph(train_data, test_data, predicted_prices, predicted_next_timeframe):
     # Create subplots and mention plot grid size
     fig = make_subplots(rows=2, cols=1, shared_xaxes=True, 
                 vertical_spacing=0.03, subplot_titles=('OHLC', 'Volume'), 
                 row_width=[0.2, 0.7])
 
     # Plot OHLC on 1st row
-    fig.add_trace(go.Candlestick(x=test_data.index, open=test_data['Open'], high=test_data['High'],
-                    low=test_data['Low'], close=test_data['Close'], name="OHLC"), 
-                    row=1, col=1
-    )
-
     fig.add_trace(
-        go.Scatter(x=test_data.index, y=actual_prices, name ='actual price',mode = 'lines'),
-        row=1, 
-        col=1);
-
+        go.Candlestick(
+            x=train_data.index, 
+            open=train_data['Open'], 
+            high=train_data['High'],
+            low=train_data['Low'], 
+            close=train_data['Close'], 
+            name="OHLC"), 
+        row=1, col=1
+    )
+    fig.add_trace(
+        go.Candlestick(
+            x=test_data.index, 
+            open=test_data['Open'], 
+            high=test_data['High'],
+            low=test_data['Low'], 
+            close=test_data['Close'], 
+            name="OHLC"), 
+        row=1, col=1
+    )
     fig.add_trace(
         go.Scatter(x=test_data.index, y=predicted_prices, name ='predicted value',mode = 'lines'),
         row=1, 
         col=1);
 
     # Bar trace for volumes on 2nd row without legend
-    fig.add_trace(go.Bar(x=test_data.index, y=test_data['Volume'], showlegend=False), row=2, col=1)
+    fig.add_trace(
+        go.Bar(
+            x=train_data.index, 
+            y=train_data['Volume'], 
+            showlegend=False,
+            marker={
+                "color": 'red',
+            }
+        ),
+        row=2, 
+        col=1
+    )
+    fig.add_trace(
+        go.Bar(
+            x=test_data.index, 
+            y=test_data['Volume'], 
+            showlegend=False,
+            marker={
+                "color": 'red',
+            }
+        ),
+        row=2, 
+        col=1
+    )
 
     # Do not show OHLC's rangeslider plot 
     fig.update(layout_xaxis_rangeslider_visible=False)
 
-    return dcc.Graph(
-        id="Predicted Data",
-        figure= fig
-    )
+    #remove date gaps
+    date_gaps = [date for date 
+                    in pd.date_range(start = train_data.index[0], end = test_data.index[-1]) 
+                    if (date not in train_data.index) and (date not in test_data.index)]
+    fig.update_xaxes(rangebreaks = [dict(values = date_gaps)])
 
-    return fig;
+    statement = "Predicted next timeframe price: " + str(predicted_next_timeframe[0][0]);
+    return html.Div(
+        children = [
+            html.H1(
+                children= statement,
+                style={'text-align':'center'}),
+            dcc.Graph(
+                id="Predicted Data",
+                figure= fig,
+                style={'width': '220vh', 'height': '120vh'},
+            ),
+        ]
+    );

@@ -8,11 +8,7 @@ import pandas as pd
 from sklearn.preprocessing import MinMaxScaler
 
 scaler = MinMaxScaler(feature_range=(0, 1))
-prediction_days = 60;
-
-#load data
-# company = 'META'
-# data = web.DataReader(company, 'yahoo', start, end)
+prediction_days = 200;
 
 def getModel(data):
     # prepare data
@@ -22,7 +18,7 @@ def getModel(data):
     y_train = []
 
     for x in range(prediction_days, len(scaled_data)):
-        x_train.append(scaled_data[x - prediction_days: x, 0])
+        x_train.append(scaled_data[x - prediction_days: x - 1, 0])
         y_train.append(scaled_data[x, 0])
 
     x_train, y_train = np.array(x_train), np.array(y_train)
@@ -56,7 +52,7 @@ def predictTestData(data, model, test_data):
     x_test = []
 
     for x in range(prediction_days, len(model_inputs)):
-        x_test.append(model_inputs[x - prediction_days: x, 0])
+        x_test.append(model_inputs[x - prediction_days: x - 1, 0])
 
     x_test = np.array(x_test)
     x_test = np.reshape(x_test, (x_test.shape[0], x_test.shape[1], 1))
@@ -65,5 +61,12 @@ def predictTestData(data, model, test_data):
     predicted_prices = scaler.inverse_transform(predicted_prices)
 
     predicted_prices = predicted_prices.reshape(-1,)
-    
-    return predicted_prices;
+
+    real_data = [model_inputs[len(model_inputs) + 1 - prediction_days: len(model_inputs), 0]]
+    real_data = np.array(real_data);
+    real_data = np.reshape(real_data, (real_data.shape[0], real_data.shape[1], 1))
+
+    predicted_next_timeframe = model.predict(real_data);
+    predicted_next_timeframe = scaler.inverse_transform(predicted_next_timeframe)
+
+    return predicted_prices, predicted_next_timeframe;

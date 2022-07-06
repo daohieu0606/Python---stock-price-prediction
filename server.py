@@ -18,11 +18,13 @@ import test
 import LSTM
 import time
 import investpy
+import body
+import RNN
+import XGBoost
 
 app = dash.Dash()
 server = app.server
 
-#Build model
 app.layout = html.Div(
     id = 'app',
     children = [
@@ -42,7 +44,7 @@ def updateGraph(n_clicks, value):
     if n_clicks > 0:
         try:
             train_start = dt.datetime(2015, 1,1)
-            train_end = dt.datetime(2022, 1,1 )
+            train_end = dt.datetime(2020, 1,1 )
             data = investpy.get_stock_historical_data(stock=value,
                                 country='vietnam',
                                 from_date=train_start.strftime("%d/%m/%Y"),
@@ -51,31 +53,28 @@ def updateGraph(n_clicks, value):
             model = LSTM.getModel(data);
 
             #Load test data
-            test_start = dt.datetime(2022,1,1)
+            test_start = dt.datetime(2020,1,1)
             test_end = dt.datetime.now()
 
-            # test_data = web.DataReader(value, 'yahoo', test_start, test_end)
             test_data = investpy.get_stock_historical_data(stock=value,
                                 country='vietnam',
                                 from_date=test_start.strftime("%d/%m/%Y"),
                                 to_date=test_end.strftime("%d/%m/%Y"))
             
-            print(test_data)
+            predicted_prices, predicted_next_timeframe = LSTM.predictTestData(data = data, model=model, test_data= test_data)
 
-            actual_prices = test_data['Close'].values
+            indicator_data = [data, test_data]
+            indicator_data = pd.concat(indicator_data)
 
-            predicted_prices = LSTM.predictTestData(data = data, model=model, test_data= test_data)
-
-            # predicted_prices2 = XGBoost.predictTestData(model=model, test_data= test_data)
-            # predicted_prices3 = RNN.predictTestData(model=model, test_data= test_data)
-            
-            return view.getGraph(test_data, actual_prices, predicted_prices);
-        except:
-            return 'Khong tim thay ma chung khoan';
+            return html.Div(
+                children = [
+                    body.getLstmView(data, test_data, predicted_prices, predicted_next_timeframe),
+                    body.getIndicatorView(indicator_data)
+                ]
+            );
+        except Exception as e: 
+            return e;
 
 
 if __name__=='__main__':
     app.run_server(debug=True)
-
-
-#https://github.com/bcmi/stock-price-prediction/blob/master/%E5%88%98%E6%80%9D%E8%BE%B0/XGBoost.py

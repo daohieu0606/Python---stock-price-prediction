@@ -14,14 +14,9 @@ from sklearn.preprocessing import LabelEncoder
 
 scaler = MinMaxScaler(feature_range=(0, 1))
 prediction_days = 60;
-start = dt.datetime(2015, 1,1)
-end = dt.datetime(2022, 1,1 )
 
-#load data
-company = 'META'
-data = web.DataReader(company, 'yahoo', start, end)
 
-def getModel():
+def getModel(data):
     # prepare data
     scaled_data = scaler.fit_transform(data['Close'].values.reshape(-1,1))
 
@@ -43,7 +38,7 @@ def getModel():
     model.fit(x_train, y_train)
     return model
 
-def predictTestData(model, test_data):
+def predictTestData(data, model, test_data):
 
     total_dataset = pd.concat((data['Close'], test_data['Close']), axis=0)
 

@@ -12,13 +12,8 @@ from sklearn.preprocessing import MinMaxScaler
 
 scaler = MinMaxScaler(feature_range=(0, 1))
 prediction_days = 60;
-start = dt.datetime(2015, 1,1)
-end = dt.datetime(2022, 1,1 )
 
 #load data
-company = 'META'
-data = web.DataReader(company, 'yahoo', start, end)
-
 class MinimalRNNCell(keras.layers.Layer):
 
     def __init__(self, units, **kwargs):
@@ -45,7 +40,7 @@ class MinimalRNNCell(keras.layers.Layer):
 # Let's use this cell in a RNN layer:
 
 
-def getModel():
+def getModel(data):
     # prepare data
     scaled_data = scaler.fit_transform(data['Close'].values.reshape(-1,1))
 
@@ -73,11 +68,11 @@ def getModel():
     model.add(layers.Dense(10))
 
     model.compile(optimizer='adam', loss ='mean_squared_error')
-    model.fit(x_train, y_train, epochs = 5, batch_size = 32)
+    model.fit(x_train, y_train, epochs = 1, batch_size = 32)
 
     return model;
 
-def predictTestData(model, test_data):
+def predictTestData(data, model, test_data):
     total_dataset = pd.concat((data['Close'], test_data['Close']), axis=0)
 
     model_inputs = total_dataset[len(total_dataset) - len(test_data) - prediction_days: ].values
