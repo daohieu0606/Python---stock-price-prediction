@@ -19,6 +19,8 @@ import LSTM
 import time
 import investpy
 import body
+import body1
+import body2
 import RNN
 import XGBoost
 
@@ -51,6 +53,8 @@ def updateGraph(n_clicks, value):
                                 to_date=train_end.strftime("%d/%m/%Y"))
 
             model = LSTM.getModel(data);
+            model1 = RNN.getModel(data);
+            model2 = XGBoost.getModel(data);
 
             #Load test data
             test_start = dt.datetime(2020,1,1)
@@ -60,15 +64,17 @@ def updateGraph(n_clicks, value):
                                 country='vietnam',
                                 from_date=test_start.strftime("%d/%m/%Y"),
                                 to_date=test_end.strftime("%d/%m/%Y"))
-            
             predicted_prices, predicted_next_timeframe = LSTM.predictTestData(data = data, model=model, test_data= test_data)
-
+            predicted_prices1, predicted_next_timeframe1 = RNN.predictTestData(data = data, model=model1, test_data= test_data)
+            predicted_prices2, predicted_next_timeframe2 = XGBoost.predictTestData(data = data, model=model2, test_data= test_data)
             indicator_data = [data, test_data]
             indicator_data = pd.concat(indicator_data)
 
             return html.Div(
                 children = [
                     body.getLstmView(data, test_data, predicted_prices, predicted_next_timeframe),
+                    body1.getLstmView(data, test_data, predicted_prices1, predicted_next_timeframe1),
+                    body2.getLstmView(data, test_data, predicted_prices2, predicted_next_timeframe2),
                     body.getIndicatorView(indicator_data)
                 ]
             );

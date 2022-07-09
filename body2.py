@@ -56,7 +56,7 @@ def getLstmView(train_data, test_data, predicted_prices, predicted_next_timefram
     return html.Div(
         children = [
             html.H1(
-                children= "1. LSTM",
+                children= "3. XGBOOST",
                 style={'margin-left':'50px'}),
             html.H1(
                 children= statement,
@@ -73,7 +73,7 @@ def getIndicatorView(df):
     return html.Div(
         children = [
             html.H1(
-                children= "4. Technial Indicator (MACD & Bollinger Bands)",
+                children= "2. Technial Indicator (MACD & Bollinger Bands)",
                 style={'margin-left':'50px'}),
             dcc.Graph(
                 id="macd",
