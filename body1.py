@@ -56,7 +56,7 @@ def getLstmView(train_data, test_data, predicted_prices, predicted_next_timefram
     return html.Div(
         children = [
             html.H1(
-                children= "1. LSTM",
+                children= "2. RNN",
                 style={'margin-left':'50px'}),
             html.H1(
                 children= statement,

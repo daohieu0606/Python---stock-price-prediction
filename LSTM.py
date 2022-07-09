@@ -36,7 +36,7 @@ def getModel(data):
     model.add(Dense(units = 1))
 
     model.compile(optimizer='adam', loss ='mean_squared_error')
-    model.fit(x_train, y_train, epochs = 5, batch_size = 32)
+    model.fit(x_train, y_train, epochs = 1, batch_size = 32)
 
     return model;
 
@@ -68,5 +68,5 @@ def predictTestData(data, model, test_data):
 
     predicted_next_timeframe = model.predict(real_data);
     predicted_next_timeframe = scaler.inverse_transform(predicted_next_timeframe)
-
+    
     return predicted_prices, predicted_next_timeframe;
