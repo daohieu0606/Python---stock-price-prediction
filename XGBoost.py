@@ -52,8 +52,13 @@ def predictTestData(data, model, test_data):
     x_test = np.array(x_test)
     
     predicted_prices = model.predict(x_test)
+    k=data['Close'][len(data['Close'])-1]/predicted_prices[0]
+    for i in range(len(predicted_prices)):
+        predicted_prices[i] = predicted_prices[i]*k
     real_data = [model_inputs[len(model_inputs) - prediction_days: len(model_inputs), 0]]
     real_data = np.array(real_data);
     predicted_next_timeframe = model.predict(real_data);
     predicted_next_timeframe = np.reshape(predicted_next_timeframe, (1,1))
+    for i in range(len(predicted_next_timeframe)):
+        predicted_next_timeframe[i][0] = predicted_next_timeframe[i][0]*k
     return predicted_prices, predicted_next_timeframe;
